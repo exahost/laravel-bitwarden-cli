@@ -22,4 +22,6 @@ class LaravelBitwardenCliServiceProvider extends PackageServiceProvider
             //->hasMigration('create_laravel-bitwarden-cli_table')
             //->hasCommand(LaravelBitwardenCliCommand::class);
     }    
+
+    
 }
