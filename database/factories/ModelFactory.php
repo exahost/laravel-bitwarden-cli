@@ -1,6 +1,6 @@
 <?php
 
-namespace VendorName\Skeleton\Database\Factories;
+namespace Aleex1848\LaravelBitwardenCli\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 

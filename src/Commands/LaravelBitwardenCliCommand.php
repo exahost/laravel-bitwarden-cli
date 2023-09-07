@@ -1,12 +1,12 @@
 <?php
 
-namespace VendorName\Skeleton\Commands;
+namespace Aleex1848\LaravelBitwardenCli\Commands;
 
 use Illuminate\Console\Command;
 
-class SkeletonCommand extends Command
+class LaravelBitwardenCliCommand extends Command
 {
-    public $signature = 'skeleton';
+    public $signature = 'laravel-bitwarden-cli';
 
     public $description = 'My command';
 
