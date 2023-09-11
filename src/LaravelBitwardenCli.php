@@ -65,17 +65,54 @@ class LaravelBitwardenCli
     public function sync()
     {
         return $this->request('sync','post');
+    }    
+
+    public function getValue($item,$fieldd)
+    {
+        $field = str($fieldd);
+        if($field->contains('.'))
+        {
+            $sub = $field->before('.')->value;
+            $key = $field->after('.')->value;
+            if(is_array($item[$sub]))
+            {
+                return collect($item[$sub])->where('name',$key)->first()->value;
+            }
+            else
+            {
+                return $item[$sub]->$key;
+            }
+        } 
+        else {
+#            dd($item);
+            return $item[$field->value];
+        }
     }
 
-    public function getLogin($identifier) : Collection|null
+    public function getValues($identifier, array $fields)
+    {
+        $result = [];
+        $item = $this->getItem($identifier);
+        foreach($fields as $field)
+        {
+
+           array_push($result, [
+            $field => $this->getValue($item, $field)
+           ]);
+        }
+      
+        return $result;
+    }
+
+    public function getItem($identifier) : Collection|null
     {
         return match(config('bitwarden-cli.default_identifier')) {
-            'name' => $this->getLoginByName($identifier),
-            'id' => $this->getLoginById($identifier)
+            'name' => $this->getItemByName($identifier),
+            'id' => $this->getItemById($identifier)
         };        
     }
 
-    public function getLoginById($id) : Collection|null
+    public function getItemById($id) : Collection|null
     {
         $result = $this->request('object/item/'.$id, 'get');        
         if($result)
@@ -83,18 +120,18 @@ class LaravelBitwardenCli
             $data = json_decode($result->body());
             if($data->success)
             {
-                return collect($data->data->login);
+                return collect($data->data);
             } else return null;
             
         } else return null;
     }
 
-    public function getLoginByName($name) : Collection|null
+    public function getItemByName($name) : Collection|null
     {
         $item = $this->listItems()->where('name',$name)->first();
         if($item) {
             //dd($item);
-            return collect($item->login);
+            return collect($item);
         } else return null;
         
     }
