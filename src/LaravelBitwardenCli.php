@@ -50,7 +50,7 @@ class LaravelBitwardenCli
     {
         if($this->isLocked()) {
             $this->unlock();
-        }
+        }        
 
         $result = Http::$verb($this->url.$path);
         
@@ -62,7 +62,10 @@ class LaravelBitwardenCli
         else return null;
     }
 
-    
+    public function sync()
+    {
+        return $this->request('sync','post');
+    }
 
     public function getLogin($identifier) : Collection|null
     {
