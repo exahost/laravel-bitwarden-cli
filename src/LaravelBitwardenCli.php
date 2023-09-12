@@ -1,6 +1,8 @@
 <?php
 
 namespace Aleex1848\LaravelBitwardenCli;
+
+use Exception;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
@@ -108,7 +110,8 @@ class LaravelBitwardenCli
     {
         return match(config('bitwarden-cli.default_identifier')) {
             'name' => $this->getItemByName($identifier),
-            'id' => $this->getItemById($identifier)
+            'id' => $this->getItemById($identifier),
+            default => throw new Exception('unknown identifier')
         };        
     }
 
