@@ -52,10 +52,10 @@ class LaravelBitwardenCli
     {
         if($this->isLocked()) {
             $this->unlock();
-        }        
+        }
 
         $result = Http::$verb($this->url.$path);
-        
+
         if($result->ok())
         {
             $this->lock();
@@ -67,7 +67,7 @@ class LaravelBitwardenCli
     public function sync()
     {
         return $this->request('sync','post');
-    }    
+    }
 
     public function getValue($item,$fieldd)
     {
@@ -84,7 +84,7 @@ class LaravelBitwardenCli
             {
                 return $item[$sub]->$key;
             }
-        } 
+        }
         else {
 #            dd($item);
             return $item[$field->value];
@@ -102,7 +102,7 @@ class LaravelBitwardenCli
             $field => $this->getValue($item, $field)
            ]);
         }
-      
+
         return $result;
     }
 
@@ -112,12 +112,12 @@ class LaravelBitwardenCli
             'name' => $this->getItemByName($identifier),
             'id' => $this->getItemById($identifier),
             default => throw new Exception('unknown identifier')
-        };        
+        };
     }
 
     public function getItemById($id) : Collection|null
     {
-        $result = $this->request('object/item/'.$id, 'get');        
+        $result = $this->request('object/item/'.$id, 'get');
         if($result)
         {
             $data = json_decode($result->body());
@@ -125,7 +125,7 @@ class LaravelBitwardenCli
             {
                 return collect($data->data);
             } else return null;
-            
+
         } else return null;
     }
 
@@ -136,12 +136,12 @@ class LaravelBitwardenCli
             //dd($item);
             return collect($item);
         } else return null;
-        
+
     }
 
     public function listItems() : Collection|null
     {
-        $result = $this->request('list/object/items', 'get');        
+        $result = $this->request('list/object/items', 'get');
         if($result)
         {
             $data = json_decode($result->body());
@@ -149,7 +149,7 @@ class LaravelBitwardenCli
             {
                 return collect($data->data->data);
             } else return null;
-            
+
         } else return null;
     }
 }
