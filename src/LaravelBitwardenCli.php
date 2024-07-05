@@ -63,7 +63,7 @@ class LaravelBitwardenCli
             $this->lock();
             return $result;
         }
-        else return [$result,json_decode($body)];
+        else return null;
     }
 
     public function sync()
