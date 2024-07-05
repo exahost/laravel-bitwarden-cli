@@ -48,20 +48,22 @@ class LaravelBitwardenCli
 
     }
 
-    public function request($path, $verb) : Response|null
+
+
+    public function request($path, $verb, $body = null) : Response|array
     {
         if($this->isLocked()) {
             $this->unlock();
         }
 
-        $result = Http::$verb($this->url.$path);
+        $result = Http::$verb($this->url.$path,$body);
 
         if($result->ok())
         {
             $this->lock();
             return $result;
         }
-        else return null;
+        else return [$result,json_decode($body)];
     }
 
     public function sync()
@@ -69,6 +71,68 @@ class LaravelBitwardenCli
         return $this->request('sync','post');
     }
 
+    public function makeUrisItem(array $uris)
+    {
+        $result = [];
+        foreach($uris as $uri)
+        {
+            $result[] = [
+                'match' => 0,
+                'uri' => $uri
+            ];
+        }
+        return $result;
+    }
+    public function makeLoginItem(string $username, string $password, ?array $uris = null)
+    {
+        $uris ?: $uris = [];
+        return [
+            'uris' => $uris,
+            'username' => $username,
+            'password' => $password,
+            'totp' => null
+        ];
+    }
+    public function uploadLoginItem(
+        string $organizationId,
+        array $collectionIds,
+        array $login,
+        string $name,
+        ?array $fields = null,
+        ?int $folderId = null
+    )
+    {
+        $item = [
+            'organizationId' => $organizationId,
+            'collectionIds' => $collectionIds,
+            'folderId' => $folderId,
+            'type' => 1,
+            'name' => $name,
+            'notes' => null,
+            'favorite' => false,
+            'login' => $login,
+            'reprompt' => 0
+        ];
+        if($fields) $item['fields'] = $fields;
+        else $item['fields'] = [];
+
+        return $this->request('object/item','post',$item);
+    }
+
+    public function deleteItem($id)
+    {
+        $result = $this->request('object/item/'.$id, 'delete');
+        return $result;
+        if($result)
+        {
+            $data = json_decode($result->body());
+            if($data->success)
+            {
+                return collect($data->data);
+            } else return null;
+
+        } else return null;
+    }
     public function getValue($item,$fieldd)
     {
         $field = str($fieldd);
