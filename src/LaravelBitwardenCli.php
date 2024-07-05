@@ -50,7 +50,7 @@ class LaravelBitwardenCli
 
 
 
-    public function request($path, $verb, $body = null) : Response|array
+    public function request($path, $verb, $body = null) : Response|null
     {
         if($this->isLocked()) {
             $this->unlock();
