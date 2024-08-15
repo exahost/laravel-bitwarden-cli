@@ -5,6 +5,7 @@ namespace Aleex1848\LaravelBitwardenCli;
 use Exception;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use stdClass;
 /*
@@ -57,6 +58,17 @@ class LaravelBitwardenCli
         }
 
         $result = Http::$verb($this->url.$path,$body);
+        if(config('bitwarden-cli.cache.enabled'))
+        {
+            $result = Cache::remember(
+                'bitwarden-cli-'.str($path)->slug(),
+                config('bitwarden-cli.cache.ttl_seconds'),
+            function() use ($verb, $path, $body){
+                    return Http::$verb($this->url.$path,$body);
+            });
+        } else {
+            $result = Http::$verb($this->url.$path,$body);
+        }
 
         if($result->ok())
         {
