@@ -26,7 +26,7 @@ class LaravelBitwardenCli
         if($result->ok())
         {
             return json_decode($result->body());
-        } else return null;
+        } else $result->throw();
     }
 
     public function isLocked() : bool
@@ -57,25 +57,14 @@ class LaravelBitwardenCli
             $this->unlock();
         }
 
-        $result = Http::$verb($this->url.$path,$body);
-        if(config('bitwarden-cli.cache.enabled'))
-        {
-            $result = Cache::remember(
-                'bitwarden-cli-'.str($path)->slug(),
-                config('bitwarden-cli.cache.ttl_seconds'),
-            function() use ($verb, $path, $body){
-                    return Http::$verb($this->url.$path,$body);
-            });
-        } else {
-            $result = Http::$verb($this->url.$path,$body);
-        }
+        $result = Http::$verb($this->url.$path,$body);        
 
         if($result->ok())
         {
-            $this->lock();
+//            $this->lock();
             return $result;
         }
-        else return null;
+        else $result->throw();
     }
 
     public function sync()
@@ -143,7 +132,7 @@ class LaravelBitwardenCli
                 return collect($data->data);
             } else return null;
 
-        } else return null;
+        } else $result->throw();
     }
     public function getValue($item,$fieldd)
     {
@@ -202,7 +191,7 @@ class LaravelBitwardenCli
                 return collect($data->data);
             } else return null;
 
-        } else return null;
+        } else $result->throw();
     }
 
     public function getItemByName($name) : Collection|null
@@ -217,7 +206,19 @@ class LaravelBitwardenCli
 
     public function listItems() : Collection|null
     {
-        $result = $this->request('list/object/items', 'get');
+        if(config('bitwarden-cli.cache.enabled'))
+        {
+            $result = Cache::remember(
+                'bitwarden-cli-listItems',
+                config('bitwarden-cli.cache.ttl_seconds'),
+            function() {
+                    return $this->request('list/object/items', 'get');
+            });
+        } else {
+            $result = $this->request('list/object/items', 'get');
+        }
+
+//        $result = $this->request('list/object/items', 'get');
         if($result)
         {
             $data = json_decode($result->body());
@@ -226,6 +227,6 @@ class LaravelBitwardenCli
                 return collect($data->data->data);
             } else return null;
 
-        } else return null;
+        } else $result->throw();
     }
 }
