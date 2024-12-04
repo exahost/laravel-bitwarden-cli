@@ -1,5 +1,7 @@
 {
     "name": "aleex1848/laravel-bitwarden-cli",
+    "version": "1.0.0",
+
     "description": "This is my package laravel-bitwarden-cli",
     "keywords": [
         "aleex1848",

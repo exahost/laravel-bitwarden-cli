@@ -204,18 +204,20 @@ class LaravelBitwardenCli
 
     }
 
-    public function listItems() : Collection|null
-    {
+    public function listItems($collectionId = null) : Collection|null
+    {        
+        $endpoint = $collectionId ? 'list/object/items?collectionId='.$collectionId : 'list/object/items';
         if(config('bitwarden-cli.cache.enabled'))
         {
             $result = Cache::remember(
                 'bitwarden-cli-listItems',
                 config('bitwarden-cli.cache.ttl_seconds'),
-            function() {
-                    return $this->request('list/object/items', 'get');
-            });
+                function() use ($endpoint){
+                        return $this->request($endpoint, 'get');
+                }
+            );
         } else {
-            $result = $this->request('list/object/items', 'get');
+            $result = $this->request($endpoint, 'get');
         }
 
 //        $result = $this->request('list/object/items', 'get');
