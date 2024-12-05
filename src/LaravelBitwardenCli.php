@@ -207,28 +207,39 @@ class LaravelBitwardenCli
     public function listItems($collectionId = null) : Collection|null
     {        
         $endpoint = $collectionId ? 'list/object/items?collectionId='.$collectionId : 'list/object/items';
+        $cacheName = $collectionId ? 'bitwarden-cli-listItems-'.$collectionId : 'bitwarden-cli-listItems';
         if(config('bitwarden-cli.cache.enabled'))
         {
-            $result = Cache::remember(
-                'bitwarden-cli-listItems',
-                config('bitwarden-cli.cache.ttl_seconds'),
+            return Cache::flexible(
+                $cacheName,
+                [config('bitwarden-cli.cache.ttl_seconds'),config('bitwarden-cli.cache.ttl_seconds')+10],
                 function() use ($endpoint){
-                        return $this->request($endpoint, 'get');
+                        $result = $this->request($endpoint, 'get');
+                        $data = json_decode($result->body());
+                        if($data->success)
+                        {
+                            return collect($data->data->data);
+                        } else return null;
                 }
             );
         } else {
             $result = $this->request($endpoint, 'get');
-        }
-
-//        $result = $this->request('list/object/items', 'get');
-        if($result)
-        {
             $data = json_decode($result->body());
             if($data->success)
             {
                 return collect($data->data->data);
             } else return null;
+        }
 
-        } else $result->throw();
+//        $result = $this->request('list/object/items', 'get');
+        // if($result)
+        // {
+        //     $data = json_decode($result->body());
+        //     if($data->success)
+        //     {
+        //         return collect($data->data->data);
+        //     } else return null;
+
+        // } else $result->throw();
     }
 }
