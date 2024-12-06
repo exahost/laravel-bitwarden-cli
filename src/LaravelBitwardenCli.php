@@ -5,6 +5,7 @@ namespace Aleex1848\LaravelBitwardenCli;
 use Exception;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use stdClass;
@@ -69,6 +70,7 @@ class LaravelBitwardenCli
 
     public function sync()
     {
+        if(config('bitwarden-cli.cache.enabled')) Artisan::call('cache:clear');
         return $this->request('sync','post');
     }
 
@@ -117,6 +119,7 @@ class LaravelBitwardenCli
         if($fields) $item['fields'] = $fields;
         else $item['fields'] = [];
 
+        $this->sync();
         return $this->request('object/item','post',$item);
     }
 
@@ -129,6 +132,7 @@ class LaravelBitwardenCli
             $data = json_decode($result->body());
             if($data->success)
             {
+                $this->sync();
                 return collect($data->data);
             } else return null;
 
