@@ -62,7 +62,7 @@ class LaravelBitwardenCli
 
         if($result->ok())
         {
-            if(config('bitwarden-cli.BITWARDEN_LOCK_AFTER_REQUEST')) $this->lock();
+            if(config('bitwarden-cli.lock_after_request')) $this->lock();
             return $result;
         }
         else $result->throw();
