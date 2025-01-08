@@ -5,6 +5,7 @@ return [
     'default_identifier' => 'name',
     'password' => env('BITWARDEN_PASSWORD'),
     'url' => env('BITWARDEN_URL'),
+    'lock_after_request' => env('BITWARDEN_LOCK_AFTER_REQUEST',true),
     'cache' => [
         'enabled' => env('BITWARDEN_CACHE_ENABLED',true),
         'ttl_seconds' => env('BITWARDEN_CACHE_TTL',3600),
