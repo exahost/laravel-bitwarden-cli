@@ -1,6 +1,6 @@
 {
-    "name": "aleex1848/laravel-bitwarden-cli",
-    "version": "1.1.11",
+    "name": "exahost/laravel-bitwarden-cli",
+    "version": "1.1.12",
 
     "description": "This is my package laravel-bitwarden-cli",
     "keywords": [
@@ -8,7 +8,7 @@
         "laravel",
         "laravel-bitwarden-cli"
     ],
-    "homepage": "https://github.com/aleex1848/laravel-bitwarden-cli",
+    "homepage": "https://github.com/exahost/laravel-bitwarden-cli",
     "license": "MIT",
     "authors": [
         {
